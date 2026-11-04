@@ -19,3 +19,7 @@ unpkg
 vite
 vitest
 ACMR
+markroot
+frontmatter
+comark
+shiki
