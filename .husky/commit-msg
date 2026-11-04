@@ -1,0 +1,2 @@
+pnpm exec commitlint --edit "$1"
+pnpm exec cspell --no-summary --no-progress commit-msg "$1"

@@ -1,0 +1,48 @@
+ignoreWorkspaceRootCheck: true
+minimumReleaseAgeExcludePrune: true
+trustPolicy: no-downgrade
+
+peerDependencyRules:
+  allowedVersions:
+    tsdown-stale-guard>tsdown: 0.23.4
+
+shellEmulator: true
+
+packages:
+  - packages/*
+  - examples/*
+
+catalogs:
+
+  build:
+    '@arethetypeswrong/core': ^0.18.1
+    publint: ^0.3.25
+    tsdown: ^0.23.4
+    tsdown-stale-guard: ^0.1.3
+    typescript: ^6.0.3
+    vite: ^8.3.5
+
+  commit:
+    '@commitlint/cli': ^21.2.4
+    '@commitlint/config-conventional': ^21.2.4
+    commitizen: ^4.3.2
+    cz-conventional-changelog: ^3.3.0
+    husky: ^9.1.7
+    lint-staged: ^17.6.0
+
+  lint:
+    '@antfu/eslint-config': ^10.0.0
+    cspell: ^10.4.0
+    eslint: ^10.14.0
+    eslint-plugin-slop: ^0.1.3
+    eslint-plugin-sonarjs: ^4.2.2
+
+  release:
+    '@changesets/cli': ^3.0.3
+
+  test:
+    '@vitest/coverage-v8': ^5.0.5
+    vitest: ^5.0.5
+
+  types:
+    '@types/node': ^26.6.6

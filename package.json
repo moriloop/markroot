@@ -1,0 +1,76 @@
+{
+  "name": "ts-monorepo-starter-kit",
+  "type": "module",
+  "version": "0.0.0",
+  "private": true,
+  "packageManager": "pnpm@12.16.1",
+  "description": "A modern TypeScript monorepo starter with pnpm workspaces, an ESM-first tsdown build, ESLint, Vitest, Conventional Commits, Changesets, and automatic spell-checking",
+  "author": "Mori <itsmori@tutamail.com>",
+  "license": "MIT",
+  "homepage": "https://github.com/moriloop/ts-monorepo-starter-kit",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/moriloop/ts-monorepo-starter-kit.git"
+  },
+  "bugs": "https://github.com/moriloop/ts-monorepo-starter-kit/issues",
+  "keywords": [
+    "typescript",
+    "eslint",
+    "monorepo",
+    "pnpm workspace",
+    "lib starter",
+    "library",
+    "commitizen",
+    "husky",
+    "conventional-commits",
+    "changesets",
+    "cspell",
+    "rust-based build",
+    "tsdown"
+  ],
+  "scripts": {
+    "build": "tsdown",
+    "dev": "tsdown --watch",
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit && pnpm -r --if-present typecheck",
+    "test": "vitest",
+    "coverage": "vitest --coverage",
+    "spell": "cspell .",
+    "commit": "cz",
+    "changeset": "changeset",
+    "version-packages": "changeset version",
+    "release": "pnpm build && changeset publish",
+    "prepare": "husky"
+  },
+  "devDependencies": {
+    "@antfu/eslint-config": "catalog:lint",
+    "@arethetypeswrong/core": "catalog:build",
+    "@changesets/cli": "catalog:release",
+    "@commitlint/cli": "catalog:commit",
+    "@commitlint/config-conventional": "catalog:commit",
+    "@types/node": "catalog:types",
+    "@vitest/coverage-v8": "catalog:test",
+    "commitizen": "catalog:commit",
+    "cspell": "catalog:lint",
+    "cz-conventional-changelog": "catalog:commit",
+    "eslint": "catalog:lint",
+    "eslint-plugin-slop": "catalog:lint",
+    "eslint-plugin-sonarjs": "catalog:lint",
+    "husky": "catalog:commit",
+    "lint-staged": "catalog:commit",
+    "publint": "catalog:build",
+    "tsdown": "catalog:build",
+    "tsdown-stale-guard": "catalog:build",
+    "typescript": "catalog:build",
+    "vite": "catalog:build",
+    "vitest": "catalog:test"
+  },
+  "lint-staged": {
+    "*.*": "eslint --fix"
+  },
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-conventional-changelog"
+    }
+  }
+}
