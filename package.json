@@ -1,5 +1,5 @@
 {
-  "name": "ts-monorepo-starter-kit",
+  "name": "markroot",
   "type": "module",
   "version": "0.0.0",
   "private": true,
@@ -7,12 +7,12 @@
   "description": "A modern TypeScript monorepo starter with pnpm workspaces, an ESM-first tsdown build, ESLint, Vitest, Conventional Commits, Changesets, and automatic spell-checking",
   "author": "Mori <itsmori@tutamail.com>",
   "license": "MIT",
-  "homepage": "https://github.com/moriloop/ts-monorepo-starter-kit",
+  "homepage": "https://github.com/moriloop/markroot",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/moriloop/ts-monorepo-starter-kit.git"
+    "url": "git+https://github.com/moriloop/markroot.git"
   },
-  "bugs": "https://github.com/moriloop/ts-monorepo-starter-kit/issues",
+  "bugs": "https://github.com/moriloop/markroot/issues",
   "keywords": [
     "typescript",
     "eslint",
