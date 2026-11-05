@@ -85,7 +85,7 @@ Allow developers to register custom MDC components and map them to framework-spe
 5. **Compact AST:** Compiled AST payloads must remain lightweight and JSON-serializable.  
 6. **Testability:** Each provider and processing layer must have a clear interface, isolated implementation, and independently testable behavior.
 
-`unstorage` may be used internally for caching or key-value storage, but it must not define or restrict the public content-provider abstraction.
+`unstorage` is the storage engine behind the content providers. The public `ContentProvider` interface remains Markroot's own small abstraction, and it must be adaptable from any unstorage `Storage` (`fromStorage`) so unstorage-supported sources work without new provider code. Unstorage types must not leak into the rest of the public API.
 
 ---
 
@@ -93,22 +93,34 @@ Allow developers to register custom MDC components and map them to framework-spe
 
 ### Phase 1: Content Providers
 
-**Goal:** Implement the common content retrieval abstraction and the three initial providers.
+**Goal:** Implement a thin `ContentProvider` abstraction on top of unstorage, plus the three initial providers and caching.
 
-1. Suggested module name: `@markroot/core/content` (to be more investigated before implementation)
+**Module:** `@markroot/core/content` (runtime-neutral) and `@markroot/core/content/node` (Node-only `LocalFileSystemProvider`).
+
+**Design summary:**
+
+- `ContentProvider`: `id`, `capabilities`, `read(path)`, optional `list(path)` and `stat(path)`, with guards such as `canList(provider)`.
+- `read()` returns `{ kind: 'text', path, content, meta? }`, or `null` if not found. Other failures throw `ContentError` with a code (`FORBIDDEN_PATH`, `INVALID_PATH`, `NETWORK`, `HTTP_STATUS`, `UNSUPPORTED`). Binary (`kind: 'binary'`) is reserved for a later phase.
+- Providers are built on unstorage drivers: `fs`, `http`, and a custom `githubRaw` driver.
+- `fromStorage(storage)` adapts any unstorage `Storage` to a `ContentProvider`.
+- `withCache(provider, { storage, ttl })` adds caching as a decorator, keyed by provider id and normalized path, including short negative caching for not-found results.
+- Paths are logical, root-relative, posix paths. Leading slashes are stripped; escaping the root (`..`) and null bytes are rejected.
+- `GitHubRawHttpContentProvider` resolves `https://raw.githubusercontent.com/{owner}/{repo}/{ref}/{basePath}/{path}`, with an optional token and injectable `baseURL` and `fetch`. It has no directory listing.
 
 **Tasks:**
 
-2. Define the `ContentProvider` interface and common content result structure, supporting text and binary data.  
-3. Implement `LocalFileSystemProvider` for local file retrieval and directory listing.  
-4. Implement the shared HTTP retrieval subsystem and `HttpContentProvider`.  
-5. Implement `GitHubRawHttpContentProvider` as a GitHub-specific adapter over the HTTP subsystem.  
-6. Implement path normalization, URL resolution, and filesystem path sanitization.  
-7. Define optional provider capabilities, particularly directory listing and metadata retrieval.  
-8. Add optional caching support without coupling caching to the provider interface.  
-9. Write unit tests for content retrieval, binary data, errors, URL resolution, and provider capabilities.
+1. Add `unstorage`, `pathe`, and `ufo` to the catalogs and `@repo/core`. Set up multi-entry tsdown and `exports` for `./content` and `./content/node`.
+2. Define `ContentProvider`, result types, capability flags and guards, and `ContentError` codes.
+3. Implement path normalization with `pathe` and URL resolution with `ufo`, plus minimal validation: strip leading slashes, reject paths that escape the root after normalization (`..`) and null bytes. No further sanitization.
+4. Implement `fromStorage` with a shared provider contract test suite.
+5. Implement `LocalFileSystemProvider` (unstorage `fs` driver; read, list, stat) in the Node subpath.
+6. Implement `HttpContentProvider` (unstorage `http` driver; injectable fetch, headers, and baseURL; read only).
+7. Implement the `githubRaw` unstorage driver, then `GitHubRawHttpContentProvider` through `fromStorage`.
+8. Implement `withCache` (unstorage-backed, TTL, negative caching).
+9. Write tests: the contract suite for all providers, traversal and invalid paths, not-found to `null`, error codes, URL resolution, capability guards, and cache hit, miss, and expiry. Tests use injected `fetch` and the unstorage memory driver, with no network access.
+10. Add a changeset and run lint, typecheck, test, and build.
 
-**Initial scope:** GitHub Raw supports retrieving known repository files. GitHub API browsing and object storage are deferred.
+**Initial scope:** GitHub Raw retrieves known repository files only. GitHub API browsing, object storage, and binary content are deferred.
 
 ### Phase 2: Navigation 
 
